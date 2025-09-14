@@ -1,69 +1,102 @@
-# React + TypeScript + Vite
+# 💰 Expense Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, intuitive expense tracking application built with React and Supabase to help users manage their personal finances effectively.
 
-Currently, two official plugins are available:
+## 🎯 About The Project
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This expense tracker is designed to provide users with a comprehensive view of their financial activities. The application allows users to monitor their income and expenses across multiple wallets, set budget limits for different categories, and track their spending patterns over time.
 
-## Expanding the ESLint configuration
+## ✨ Key Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Multi-Wallet Management** - Track expenses across different accounts (bank, cash, credit cards)
+- **Category-Based Tracking** - Organize transactions into customizable categories
+- **Budget Limits** - Set spending limits for categories and receive notifications
+- **Real-Time Dashboard** - View financial overview with charts and statistics
+- **Transaction History** - Complete log of all income and expense transactions
+- **Money Transfers** - Transfer funds between different wallets
+- **Subscription Tracking** - Monitor recurring payments and subscriptions
+- **Responsive Design** - Optimized for desktop and mobile devices
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🛠️ Built With
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- **Frontend**: React 18 with TypeScript
+- **Styling**: Tailwind CSS
+- **Backend**: Supabase (Database, Authentication, Real-time)
+- **Build Tool**: Vite
+- **State Management**: React Hooks & Context API
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js (v16 or higher)
+- npm or yarn
+- Supabase account
+
+### Installation
+
+1. Clone the repository
+```bash
+git clone https://github.com/yourusername/expense-tracker.git
+cd expense-tracker
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+2. Install dependencies
+```bash
+npm install
 ```
+
+3. Set up environment variables
+```bash
+cp .env.example .env.local
+```
+Add your Supabase credentials to `.env.local`
+
+4. Start the development server
+```bash
+npm run dev
+```
+
+## 🎨 Project Purpose
+
+This project was developed as part of a bootcamp to demonstrate proficiency in:
+- Modern React development patterns
+- TypeScript integration
+- Supabase backend integration
+- Responsive UI/UX design
+- State management
+- Real-time data handling
+
+## 📱 Features Overview
+
+The application provides a complete personal finance management solution where users can:
+- Add and categorize income and expenses
+- View spending analytics and trends
+- Manage multiple financial accounts
+- Set and track budget goals
+- Export financial reports
+- Receive spending alerts and notifications
+
+## 🔒 Security
+
+- Secure user authentication via Supabase Auth
+- Row-level security policies
+- Protected API endpoints
+- Data encryption in transit and at rest
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/yourusername/expense-tracker/issues).
+
+## 📧 Contact
+
+Your Name - your.email@example.com
+
+Project Link: [https://github.com/yourusername/expense-tracker](https://github.com/yourusername/expense-tracker)
+
+---
+
+*Built with ❤️ for better financial management*
