@@ -1,14 +1,16 @@
 @import "tailwindcss";
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-#root {
+
+:root {
   --color-income: #85d97f;
   --color-expense: #770001;
   --color-bg: #010001;
   --color-card-bg: #161617;
   --color-icon-bg: #2e2f2e;
   --color-navBar-text: #636263;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: white;
+  font-family: "Poppins", sans-serif;
 }
