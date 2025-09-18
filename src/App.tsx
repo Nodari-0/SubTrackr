@@ -1,32 +1,40 @@
-import { useEffect, useState } from "react";
-import { supabase } from "./supabaseClient";
+import { AuthProvider, useAuth } from "./context/AuthContext"
+import AuthCard from "./components/AuthForm"
+import Dashboard from "./pages/Dashboard"
+import { Button } from "./components/ui/button"
 
-function App() {
-  const [profiles, setProfiles] = useState([]);
-  const [error, setError] = useState(null);
+function AppContent() {
+  const { user, signOut } = useAuth()
 
-  useEffect(() => {
-    // create async function inside useEffect
-    const fetchProfiles = async () => {
-      const { data, error } = await supabase.from("profiles").select("*");
-      if (error) {
-        setError(error);
-      } else {
-        setProfiles(data);
-      }
-    };
+  if (user) {
+    return (
+      <div className="min-h-screen bg-black relative">
+        {/* Logout button top-right */}
+        <div className="absolute top-4 right-4">
+          <Button onClick={signOut} className="bg-white text-black px-4 py-2 rounded">
+            Logout
+          </Button>
+        </div>
 
-    fetchProfiles();
-  }, []);
-
-  if (error) return <div>Error: {error.message}</div>;
+        {/* Dashboard centered */}
+        <div className="flex items-center justify-center min-h-screen">
+          <Dashboard />
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div>
-      <h1>Profiles</h1>
-      <pre>{JSON.stringify(profiles, null, 2)}</pre>
+    <div className="flex items-center justify-center min-h-screen bg-black">
+      <AuthCard />
     </div>
-  );
+  )
 }
 
-export default App;
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  )
+}
