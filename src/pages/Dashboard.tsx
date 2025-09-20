@@ -11,7 +11,7 @@ export default function Dashboard() {
     "User";
 
   return (
-    <div className="text-white text-center">
+    <div className="text-black ">
       <h1 className="text-3xl font-bold mb-4">Welcome, {name}!</h1>
       <p className="text-lg">This is your dashboard.</p>
     </div>
