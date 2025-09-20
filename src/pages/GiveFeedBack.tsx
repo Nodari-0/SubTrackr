@@ -1,5 +1,3 @@
-import React from 'react'
-
 function GiveFeedBack() {
   return (
     <div className="text-gray-900">
