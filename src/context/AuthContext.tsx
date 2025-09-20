@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       listener.subscription.unsubscribe();
     };
   }, []);
-  
+
   const signUp = async (
     email: string,
     password: string,
@@ -56,7 +56,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       options: { data: { full_name: full_name || "" } },
     });
     if (error) throw error;
-    setUser(data.user);
+
+    // Don't automatically set user - let the auth state change handler do it
+    // This prevents premature redirects before email confirmation
   };
 
   const signIn = async (email: string, password: string) => {
@@ -65,7 +67,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       password,
     });
     if (error) throw error;
-    setUser(data.user);
+
+    // Let the auth state change handler update the user state
+    // This ensures consistency with session management
   };
 
   const signOut = async () => {
