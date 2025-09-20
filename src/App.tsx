@@ -1,17 +1,17 @@
-import { AuthProvider, useAuth } from "./context/AuthContext"
-import AuthCard from "./components/AuthForm"
-import Dashboard from "./pages/Dashboard"
-import { Button } from "./components/ui/button"
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import AuthCard from "./components/AuthForm";
+import Dashboard from "./pages/Dashboard";
+import { Button } from "./components/ui/button";
 
 function AppContent() {
-  const { user, signOut } = useAuth()
+  const { user, signOut } = useAuth();
 
   if (user) {
     return (
-      <div className="min-h-screen bg-black relative">
+      <div className="min-h-screen bg-white relative">
         {/* Logout button top-right */}
         <div className="absolute top-4 right-4">
-          <Button onClick={signOut} className="bg-white text-black px-4 py-2 rounded">
+          <Button onClick={signOut} className="px-4 py-2 rounded">
             Logout
           </Button>
         </div>
@@ -21,14 +21,14 @@ function AppContent() {
           <Dashboard />
         </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-black">
+    <div className="flex items-center justify-center min-h-screen bg-white">
       <AuthCard />
     </div>
-  )
+  );
 }
 
 export default function App() {
@@ -36,5 +36,5 @@ export default function App() {
     <AuthProvider>
       <AppContent />
     </AuthProvider>
-  )
+  );
 }
