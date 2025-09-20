@@ -82,7 +82,7 @@ export default function RootLayout() {
           <Button
             onClick={handleSignOut}
             variant="outline"
-            className="w-full flex items-center justify-center"
+            className="w-full flex items-center justify-center text-black bg-white"
           >
             <LogOut className="w-4 h-4 mr-2" />
             Sign Out

@@ -28,10 +28,16 @@ export default function RegisterPage() {
       await signUp(email, password, `${firstName} ${lastName}`.trim());
       setSuccess("Registration successful! Please check your email to confirm your account.");
       
-      // Optionally redirect to login after a delay
+      // Clear form
+      setEmail("");
+      setPassword("");
+      setFirstName("");
+      setLastName("");
+      
+      // Redirect to login after showing success message
       setTimeout(() => {
-        navigate("/auth/login");
-      }, 3000);
+        navigate("/auth/login", { replace: true });
+      }, 2000);
     } catch (err: any) {
       setError(err.message || "An error occurred during registration");
     } finally {
