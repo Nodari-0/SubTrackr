@@ -40,12 +40,13 @@ export default function RootLayout() {
     }
   };
 
-  const userName = user?.user_metadata?.full_name || user?.email || "User";
+  const userName =
+    user?.user_metadata?.full_name || user?.email || "User";
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="h-screen flex overflow-hidden bg-gray-50">
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-lg flex flex-col border-r border-gray-200">
+      <div className="w-64 bg-white shadow-lg flex flex-col border-r border-gray-200 h-full">
         {/* Header */}
         <div className="p-6 border-b border-gray-200">
           <h1 className="text-xl font-bold text-gray-900">
@@ -56,7 +57,10 @@ export default function RootLayout() {
             <b className="text-blue-600">
               {userName
                 .split(" ")
-                .map((word :string) => word.charAt(0).toUpperCase() + word.slice(1))
+                .map(
+                  (word: string) =>
+                    word.charAt(0).toUpperCase() + word.slice(1)
+                )
                 .join(" ")}
             </b>
           </p>
@@ -102,7 +106,7 @@ export default function RootLayout() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col bg-white">
+      <div className="flex-1 flex flex-col bg-white overflow-y-auto">
         <main className="flex-1 p-8">
           <Outlet />
         </main>
