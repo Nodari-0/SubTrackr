@@ -1,15 +1,16 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Button } from "./ui/button";
-import { 
-  LayoutDashboard, 
-  Wallet, 
-  Tags, 
-  Settings, 
-  MessageSquare, 
+import {
+  LayoutDashboard,
+  Wallet,
+  Tags,
+  Settings,
+  MessageSquare,
   AlertTriangle,
-  LogOut 
+  LogOut,
 } from "lucide-react";
+import logo from "../assets/logo-color.png";
 
 interface NavigationItem {
   path: string;
@@ -47,8 +48,18 @@ export default function RootLayout() {
       <div className="w-64 bg-white shadow-lg flex flex-col border-r border-gray-200">
         {/* Header */}
         <div className="p-6 border-b border-gray-200">
-          <h1 className="text-xl font-bold text-gray-900">SubTrackr</h1>
-          <p className="text-sm text-gray-600 mt-1">Welcome, {userName}</p>
+          <h1 className="text-xl font-bold text-gray-900">
+            <img src={logo} className="w-[250px] mx-auto" alt="logo" />
+          </h1>
+          <p className="text-sm text-gray-600 mt-1">
+            Welcome,{" "}
+            <b className="text-blue-600">
+              {userName
+                .split(" ")
+                .map((word :string) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(" ")}
+            </b>
+          </p>
         </div>
 
         {/* Navigation */}

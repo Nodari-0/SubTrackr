@@ -5,7 +5,7 @@ import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-
+import logo from "../../assets/logo-color.png";
 export default function LoginPage() {
   const { signIn } = useAuth();
   const navigate = useNavigate();
@@ -38,6 +38,7 @@ export default function LoginPage() {
   return (
     <Card className="w-full">
       <CardHeader>
+        <img src={logo}  alt="App Logo" className="mx-auto mb-4 w-[250px]" />
         <CardTitle className="text-center">Sign In</CardTitle>
       </CardHeader>
       <CardContent>
