@@ -5,7 +5,7 @@ import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-
+import logo from "../../assets/logo-color.png";
 export default function RegisterPage() {
   const { signUp } = useAuth();
   const navigate = useNavigate();
@@ -48,6 +48,7 @@ export default function RegisterPage() {
   return (
     <Card className="w-full">
       <CardHeader>
+         <img src={logo}  alt="App Logo" className="mx-auto mb-4 w-[250px]" />
         <CardTitle className="text-center">Create Account</CardTitle>
       </CardHeader>
       <CardContent>
