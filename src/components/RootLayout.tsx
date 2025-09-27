@@ -105,7 +105,7 @@ export default function RootLayout() {
               </h1>
               <p className="text-sm text-gray-600 mt-1">
                 Welcome,{" "}
-                <b className="text-blue-600">
+                <b className="text-black">
                   {userName
                     .split(" ")
                     .map(
@@ -120,7 +120,7 @@ export default function RootLayout() {
             {/* User initials for tablet */}
             <div className="hidden md:block lg:hidden text-center">
               <div className="w-8 h-8 rounded-full flex items-center justify-center mx-auto">
-                <span className="text-blue-500 font-medium text-xs">
+                <span className="text-black font-medium text-xs">
                   {userName
                     .split(" ")
                     .map((word: string) => word.charAt(0).toUpperCase())
@@ -144,7 +144,7 @@ export default function RootLayout() {
                       className={({ isActive }) =>
                         `flex items-center px-4 py-3 md:px-2 md:py-3 md:justify-center lg:px-4 lg:justify-start text-sm font-medium rounded-lg transition-colors ${
                           isActive
-                            ? "bg-blue-50 text-blue-700 border border-blue-200"
+                            ? "bg-gray-50 text-black border border-gray-200"
                             : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                         }`
                       }

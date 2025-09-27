@@ -54,7 +54,7 @@ function GiveFeedBack() {
             <label htmlFor="feedback" className="block text-sm font-medium mb-1">Your Feedback *</label>
             <textarea
               id="feedback"
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-black"
               rows={4}
               required
               value={feedback}
@@ -67,7 +67,7 @@ function GiveFeedBack() {
             <input
               id="email"
               type="email"
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-black"
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="you@example.com"
@@ -75,7 +75,7 @@ function GiveFeedBack() {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition disabled:opacity-60"
+            className="w-full bg-black cursor-pointer text-white font-semibold py-2 px-4 rounded transition disabled:opacity-60"
             disabled={loading}
           >
             {loading ? "Sending..." : "Submit Feedback"}
