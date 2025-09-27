@@ -89,7 +89,7 @@ export default function Settings() {
       </div>
 
       {/* User Info Card */}
-      <Card className="border-blue-200">
+      <Card className="border-gray-200">
         <CardHeader>
           <CardTitle>Account Information</CardTitle>
         </CardHeader>
