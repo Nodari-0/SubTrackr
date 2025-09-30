@@ -1,18 +1,22 @@
-import { useAuth } from "../context/AuthContext";
-
-export default function Dashboard() {
-  const { user } = useAuth();
-
-  const name =
-    `${(user?.user_metadata as any)?.first_name || ""} ${(user?.user_metadata as any)?.last_name || ""
-      }`.trim() ||
-    user?.email ||
-    "User";
-
+import LastTransaction from "../components/LastTransaction";
+import DonutChart from "../components/DonutChart";
+const Dashboard = () => {
   return (
-    <div className="text-gray-900">
-      <h1 className="text-3xl font-bold mb-4">Welcome, {name}!</h1>
-      <p className="text-lg text-gray-600">This is your dashboard.</p>
+    <div className="p-6">
+      <h2 className="text-xl font-bold mb-4 text-black">Dashboard</h2>
+      {/* Donut Chart */}
+      <div>
+        <DonutChart />
+      </div>
+      {/* Recent Transactions */}
+      <div className="last-transactions mt-8">
+        <h3 className="text-lg font-semibold mb-4 text-black">
+          Recent Transactions
+        </h3>
+        <LastTransaction />
+      </div>
     </div>
   );
-}
+};
+
+export default Dashboard;

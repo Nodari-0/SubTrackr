@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { supabase } from "../supabaseClient";
 import { useAuth } from "../context/AuthContext";
@@ -19,7 +18,6 @@ function GiveFeedBack() {
   const [category, setCategory] = useState("general");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,13 +35,16 @@ function GiveFeedBack() {
       message: feedback,
       ...(user ? { user_id: user.id } : {}),
     };
+
     const { error } = await supabase.from("feedback").insert([payload]);
+
     if (error) {
       console.error("Feedback error:", error);
       setError("Failed to send feedback. Please try again later.");
       setLoading(false);
       return;
     }
+
     setSubmitted(true);
     setLoading(false);
     setFeedback("");
@@ -55,35 +56,46 @@ function GiveFeedBack() {
   return (
     <div className="max-w-lg mx-auto mt-8 bg-white rounded-lg shadow p-6 text-gray-900">
       <h1 className="text-2xl font-bold mb-4">Give Feedback</h1>
-      <p className="text-gray-600 mb-6">Share your feedback to help us improve the application.</p>
+      <p className="text-gray-600 mb-6">
+        Share your feedback to help us improve the application.
+      </p>
+
       {submitted ? (
-        <div className="bg-green-100 text-green-800 px-4 py-3 rounded mb-4">Thank you for your feedback!</div>
+        <div className="bg-green-100 text-green-800 px-4 py-3 rounded mb-4">
+          Thank you for your feedback!
+        </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="bg-red-100 text-red-800 px-4 py-2 rounded mb-2">{error}</div>
+            <div className="bg-red-100 text-red-800 px-4 py-2 rounded mb-2">
+              {error}
+            </div>
           )}
           {!user && (
             <div>
-              <label htmlFor="name" className="block text-sm font-medium mb-1">Name *</label>
+              <label htmlFor="name" className="block text-sm font-medium mb-1">
+                Name *
+              </label>
               <input
                 id="name"
                 type="text"
                 className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-black"
                 required={!user}
                 value={name}
-                onChange={e => setName(e.target.value)}
+                onChange={(e) => setName(e.target.value)}
                 placeholder="Your name"
               />
             </div>
           )}
           <div>
-            <label htmlFor="category" className="block text-sm font-medium mb-1">Category *</label>
+            <label htmlFor="category" className="block text-sm font-medium mb-1">
+              Category *
+            </label>
             <select
               id="category"
               className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-black"
               value={category}
-              onChange={e => setCategory(e.target.value)}
+              onChange={(e) => setCategory(e.target.value)}
               required
             >
               <option value="general">General</option>
@@ -94,26 +106,33 @@ function GiveFeedBack() {
             </select>
           </div>
           <div>
-            <label htmlFor="feedback" className="block text-sm font-medium mb-1">Your Feedback *</label>
+            <label
+              htmlFor="feedback"
+              className="block text-sm font-medium mb-1"
+            >
+              Your Feedback *
+            </label>
             <textarea
               id="feedback"
               className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-black"
               rows={4}
               required
               value={feedback}
-              onChange={e => setFeedback(e.target.value)}
+              onChange={(e) => setFeedback(e.target.value)}
               placeholder="Type your feedback here..."
             />
           </div>
           {!user && (
             <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-1">Email (optional)</label>
+              <label htmlFor="email" className="block text-sm font-medium mb-1">
+                Email (optional)
+              </label>
               <input
                 id="email"
                 type="email"
                 className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-black"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
               />
             </div>
@@ -131,4 +150,4 @@ function GiveFeedBack() {
   );
 }
 
-export default GiveFeedBack
+export default GiveFeedBack;
