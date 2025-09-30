@@ -31,7 +31,7 @@ interface NavigationItem {
 const navigationItems: NavigationItem[] = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
   { path: "/wallets", label: "Wallets", icon: Wallet },
-  { path: "/categories", label: "Categories", icon: Tags },
+  // { path: "/categories", label: "Categories", icon: Tags },
   { path: "/settings", label: "Settings", icon: Settings },
 ];
 

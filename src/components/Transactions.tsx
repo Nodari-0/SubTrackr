@@ -24,7 +24,13 @@ import {
 } from "../components/ui/dialog";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 import { Badge } from "../components/ui/badge";
 
 const Transactions = () => {
@@ -38,14 +44,16 @@ const Transactions = () => {
   const [description, setDescription] = useState("");
 
   const dummyData = [
-    { id: "1", bank_id: "67a54a88-eaa9-4dee-b630-cfe504416787", amount: 50, type: "deposit", description: "Grocery" },
-    { id: "2", bank_id: "67a54a88-eaa9-4dee-b630-cfe504416787", amount: 200, type: "withdrawal", description: "Salary" },
+    { id: "1", amount: 50, type: "Expense", description: "Grocery", category: "Grocery" },
+    { id: "2", amount: 200, type: "Income", description: "Salary", category: "Salary" },
   ];
 
   useEffect(() => {
     const fetchTransactions = async () => {
       setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         setTransactions(dummyData);
         setLoading(false);
@@ -63,10 +71,14 @@ const Transactions = () => {
         setTransactions(dummyData);
       } else if (data.length === 0) {
         // Insert dummy data for first-time users
-        const transaction = dummyData.map(d => ({ ...d, user_id: user.id, created_at: new Date().toISOString() }));
-        console.log(transaction)
+        const transaction = dummyData.map((d) => ({
+          ...d,
+          user_id: user.id,
+          created_at: new Date().toISOString(),
+        }));
+        console.log(transaction);
         await supabase.from("transactions").insert(transaction);
-        setTransactions(dummyData.map(d => ({ ...d, user_id: user.id })));
+        setTransactions(dummyData.map((d) => ({ ...d, user_id: user.id })));
       } else {
         setTransactions(data);
       }
@@ -78,28 +90,36 @@ const Transactions = () => {
 
   const handleAddTransaction = async (e) => {
     e.preventDefault();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
+    // ✅ FIX: Set category to the same value as description
     const { error } = await supabase.from("transactions").insert([
       {
         user_id: user.id,
         amount: parseFloat(amount),
         type,
         description,
+        category: description, // 🔥 THIS IS THE KEY FIX!
         created_at: new Date().toISOString(),
       },
     ]);
 
-    if (error) console.error("Error adding transaction:", error);
-    else {
+    if (error) {
+      console.error("Error adding transaction:", error);
+    } else {
       const { data } = await supabase
         .from("transactions")
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
       setTransactions(data || []);
-      setAmount(""); setType("Expense"); setDescription(""); setDialogOpen(false);
+      setAmount("");
+      setType("Expense");
+      setDescription("");
+      setDialogOpen(false);
     }
   };
 
@@ -110,7 +130,7 @@ const Transactions = () => {
 
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button>+</Button>
+            <Button className="cursor-pointer">+</Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <form onSubmit={handleAddTransaction}>
@@ -124,7 +144,13 @@ const Transactions = () => {
               <div className="grid gap-4 mt-5 text-black">
                 <div className="grid gap-1">
                   <Label htmlFor="amount">Amount</Label>
-                  <Input id="amount" value={amount} onChange={e => setAmount(e.target.value)} type="number" required />
+                  <Input
+                    id="amount"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    type="number"
+                    required
+                  />
                 </div>
                 <div className="grid gap-1">
                   <Label htmlFor="type">Type</Label>
@@ -139,16 +165,27 @@ const Transactions = () => {
                   </Select>
                 </div>
                 <div className="grid gap-1">
-                  <Label htmlFor="description">Description</Label>
-                  <Input id="description" value={description} onChange={e => setDescription(e.target.value)} required />
+                  <Label htmlFor="description">Description/Category</Label>
+                  <Input
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="e.g., Food, Travel, Salary"
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    This will be used to match against your spending limits
+                  </p>
                 </div>
               </div>
 
               <DialogFooter className="mt-4">
                 <DialogClose asChild>
-                  <Button variant="outline" className="text-black">Cancel</Button>
+                  <Button variant="outline" className="text-black cursor-pointer">
+                    Cancel
+                  </Button>
                 </DialogClose>
-                <Button type="submit">Save</Button>
+                <Button type="submit" className="cursor-pointer">Save</Button>
               </DialogFooter>
             </form>
           </DialogContent>
@@ -157,7 +194,10 @@ const Transactions = () => {
 
       {loading ? (
         Array.from({ length: 5 }).map((_, idx) => (
-          <div key={idx} className="flex justify-between p-2 border-b border-gray-200">
+          <div
+            key={idx}
+            className="flex justify-between p-2 border-b border-gray-200"
+          >
             <Skeleton className="h-5 w-[100px]" />
             <Skeleton className="h-5 w-[50px]" />
             <Skeleton className="h-5 w-[50px]" />
@@ -172,18 +212,30 @@ const Transactions = () => {
               <TableHead className="text-white">Amount</TableHead>
               <TableHead className="text-white">Type</TableHead>
               <TableHead className="text-white">Description</TableHead>
-              <TableHead className="text-white text-right">Created At</TableHead>
+              <TableHead className="text-white">Category</TableHead>
+              <TableHead className="text-white text-right">
+                Created At
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {transactions.map(t => (
+            {transactions.map((t) => (
               <TableRow key={t.id} className="hover:bg-gray-100 text-black">
                 <TableCell className="font-medium ">{t.amount}</TableCell>
                 <TableCell>
-                  <Badge variant={t.type === "Expense" ? "destructive" : "success"}>{t.type}</Badge>
+                  <Badge
+                    variant={t.type === "Expense" ? "destructive" : "success"}
+                  >
+                    {t.type}
+                  </Badge>
                 </TableCell>
                 <TableCell>{t.description}</TableCell>
-                <TableCell className="text-right">{new Date(t.created_at).toLocaleString()}</TableCell>
+                <TableCell>
+                  <Badge variant="outline">{t.category || 'N/A'}</Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  {new Date(t.created_at).toLocaleString()}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

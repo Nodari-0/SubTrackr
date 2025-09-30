@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../supabaseClient";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Skeleton } from "../components/ui/skeleton";
 
 export default function Settings() {
   const { user } = useAuth();
-  
+
   // Form states
   const [firstName, setFirstName] = useState(
     (user?.user_metadata as any)?.first_name || ""
@@ -20,12 +21,25 @@ export default function Settings() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // New state for showing skeletons
+  const [loadingUser, setLoadingUser] = useState(true);
+
+  useEffect(() => {
+    // Simulate fetching user info
+    async function fetchUser() {
+      setLoadingUser(true);
+      await supabase.auth.getUser();
+      setLoadingUser(false);
+    }
+    fetchUser();
+  }, []);
+
   // Get user's display name
   const getDisplayName = () => {
     const fullName = `${
       (user?.user_metadata as any)?.first_name || ""
     } ${(user?.user_metadata as any)?.last_name || ""}`.trim();
-    
+
     return fullName || user?.email || "User";
   };
 
@@ -42,7 +56,7 @@ export default function Settings() {
           first_name: firstName,
           last_name: lastName,
           full_name: `${firstName} ${lastName}`.trim(),
-        }
+        },
       });
 
       if (error) throw error;
@@ -65,7 +79,7 @@ export default function Settings() {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
-        redirectTo: window.location.origin + '/reset-password'
+        redirectTo: window.location.origin + "/reset-password",
       });
 
       if (error) throw error;
@@ -79,7 +93,7 @@ export default function Settings() {
   };
 
   return (
-    <div className="w-3xl mx-auto space-y-6 ">
+    <div className="max-w-4xl w-full mx-auto px-4 space-y-6">
       {/* Page Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
@@ -88,7 +102,7 @@ export default function Settings() {
         </p>
       </div>
 
-      {/* User Info Card */}
+      {/* User Info Card with Skeleton */}
       <Card className="border-gray-200">
         <CardHeader>
           <CardTitle>Account Information</CardTitle>
@@ -98,25 +112,39 @@ export default function Settings() {
             <Label className="text-sm font-medium text-gray-700">
               Current Name
             </Label>
-            <p className="text-lg font-semibold text-gray-900">
-              {getDisplayName()}
-            </p>
+            {loadingUser ? (
+              <Skeleton className="h-6 w-[150px]" />
+            ) : (
+              <p className="text-lg font-semibold text-gray-900">
+                {getDisplayName()}
+              </p>
+            )}
           </div>
-          
+
           <div>
             <Label className="text-sm font-medium text-gray-700">
               Email Address
             </Label>
-            <p className="text-gray-900">{user?.email}</p>
+            {loadingUser ? (
+              <Skeleton className="h-5 w-[200px]" />
+            ) : (
+              <p className="text-gray-900">{user?.email}</p>
+            )}
           </div>
-          
+
           <div>
             <Label className="text-sm font-medium text-gray-700">
               Account Created
             </Label>
-            <p className="text-gray-900">
-              {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
-            </p>
+            {loadingUser ? (
+              <Skeleton className="h-5 w-[100px]" />
+            ) : (
+              <p className="text-gray-900">
+                {user?.created_at
+                  ? new Date(user.created_at).toLocaleDateString()
+                  : "N/A"}
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -139,7 +167,7 @@ export default function Settings() {
                   placeholder="Enter your first name"
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="last_name">Last Name</Label>
                 <Input
@@ -153,16 +181,11 @@ export default function Settings() {
             </div>
 
             {/* Messages */}
-            {error && (
-              <p className="text-red-500 text-sm">{error}</p>
-            )}
-            
-            {message && (
-              <p className="text-green-500 text-sm">{message}</p>
-            )}
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {message && <p className="text-green-500 text-sm">{message}</p>}
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={loading}
               className="w-full md:w-auto"
             >
@@ -181,8 +204,8 @@ export default function Settings() {
           <p className="text-gray-600">
             Change your password by requesting a reset email.
           </p>
-          
-          <Button 
+
+          <Button
             onClick={handlePasswordReset}
             disabled={loading}
             variant="outline"
@@ -193,8 +216,6 @@ export default function Settings() {
         </CardContent>
       </Card>
 
-      
-
       {/* Danger Zone */}
       <Card className="border-red-200">
         <CardHeader>
@@ -202,15 +223,19 @@ export default function Settings() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-gray-600">
-            Once you delete your account, there is no going back. Please be certain.
+            Once you delete your account, there is no going back. Please be
+            certain.
           </p>
-          
-          <Button 
-            variant="destructive" 
-            className="w-full md:w-auto"
+
+          <Button
+            variant="destructive"
+            className="w-full md:w-auto cursor-pointer"
             onClick={() => {
-              if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
-                // Add delete account logic here
+              if (
+                window.confirm(
+                  "Are you sure you want to delete your account? This action cannot be undone."
+                )
+              ) {
                 console.log("Delete account requested");
               }
             }}
