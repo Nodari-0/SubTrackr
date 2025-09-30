@@ -9,19 +9,16 @@ import {
 } from "../components/ui/tooltip";
 import {
   LayoutDashboard,
-  Wallet,
-  Tags,
-  Settings,
+  Users,
   MessageSquare,
   AlertTriangle,
   LogOut,
   Menu,
   X,
-  Shield,
+  ArrowLeft,
 } from "lucide-react";
 import logo from "../assets/logo-color.png";
-import { useState, useEffect } from "react";
-import { supabase } from "../supabaseClient";
+import { useState } from "react";
 
 interface NavigationItem {
   path: string;
@@ -29,29 +26,18 @@ interface NavigationItem {
   icon: React.ComponentType<{ className?: string }>;
 }
 
-// Main navigation items (removed Give Feedback and Report Issue)
-const navigationItems: NavigationItem[] = [
-  { path: "/", label: "Dashboard", icon: LayoutDashboard },
-  { path: "/wallets", label: "Wallets", icon: Wallet },
-  { path: "/categories", label: "Categories", icon: Tags },
-  { path: "/settings", label: "Settings", icon: Settings },
+// Admin navigation items
+const adminNavigationItems: NavigationItem[] = [
+  { path: "/admin", label: "Overview", icon: LayoutDashboard },
+  { path: "/admin/users", label: "Users", icon: Users },
+  { path: "/admin/feedback", label: "Feedback", icon: MessageSquare },
+  { path: "/admin/issues", label: "Issues", icon: AlertTriangle },
 ];
 
-// Footer navigation items
-const footerItems: NavigationItem[] = [
-  { path: "/give-feedback", label: "Give Feedback", icon: MessageSquare },
-  { path: "/report-issue", label: "Report Issue", icon: AlertTriangle },
-];
-
-export default function RootLayout() {
-  const { user, signOut, userRole } = useAuth();
+export default function AdminLayout() {
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    setIsAdmin(userRole === "admin");
-  }, [userRole]);
 
   const handleSignOut = async () => {
     try {
@@ -62,7 +48,7 @@ export default function RootLayout() {
     }
   };
 
-  const userName = user?.user_metadata?.full_name || user?.email || "User";
+  const userName = user?.user_metadata?.full_name || user?.email || "Admin";
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -111,7 +97,7 @@ export default function RootLayout() {
                 />
               </h1>
               <p className="text-sm text-gray-600 mt-1">
-                Welcome,{" "}
+                Admin Panel -{" "}
                 <b className="text-black">
                   {userName
                     .split(" ")
@@ -138,15 +124,45 @@ export default function RootLayout() {
             </div>
           </div>
 
+          {/* Back to App Link */}
+          <div className="p-4 md:p-2 lg:p-4 border-b border-gray-200">
+            <NavLink
+              to="/"
+              onClick={() => setIsSidebarOpen(false)}
+              className="flex items-center px-4 py-3 md:px-2 md:py-3 md:justify-center lg:px-4 lg:justify-start text-sm font-medium rounded-lg transition-colors text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+            >
+              {/* Tablet view with tooltip */}
+              <div className="hidden md:flex lg:hidden">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div>
+                      <ArrowLeft className="w-5 h-5" />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    <p>Back to App</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+
+              {/* Mobile and Desktop view */}
+              <div className="flex md:hidden lg:flex items-center">
+                <ArrowLeft className="w-5 h-5 mr-3" />
+                <span>Back to App</span>
+              </div>
+            </NavLink>
+          </div>
+
           {/* Main Navigation */}
           <nav className="flex-1 p-4 md:p-2 lg:p-4">
             <ul className="space-y-2">
-              {navigationItems.map((item) => {
+              {adminNavigationItems.map((item) => {
                 const Icon = item.icon;
                 return (
                   <li key={item.path}>
                     <NavLink
                       to={item.path}
+                      end={item.path === "/admin"}
                       onClick={() => setIsSidebarOpen(false)}
                       className={({ isActive }) =>
                         `flex items-center px-4 py-3 md:px-2 md:py-3 md:justify-center lg:px-4 lg:justify-start text-sm font-medium rounded-lg transition-colors ${
@@ -182,75 +198,8 @@ export default function RootLayout() {
             </ul>
           </nav>
 
-          {/* Footer with Give Feedback, Report Issue, and Sign Out */}
+          {/* Footer with Sign Out */}
           <div className="p-4 md:p-2 lg:p-4 border-t border-gray-200">
-            {/* Admin Panel Link */}
-            {isAdmin && (
-              <div className="mb-2">
-                <NavLink
-                  to="/admin"
-                  onClick={() => setIsSidebarOpen(false)}
-                  className="flex items-center px-4 py-3 md:px-2 md:py-3 md:justify-center lg:px-4 lg:justify-start text-sm font-medium rounded-lg transition-colors bg-black text-white hover:bg-gray-800"
-                >
-                  {/* Tablet view with tooltip */}
-                  <div className="hidden md:flex lg:hidden">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div>
-                          <Shield className="w-5 h-5" />
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent side="right">
-                        <p>Admin Panel</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-
-                  {/* Mobile and Desktop view */}
-                  <div className="flex md:hidden lg:flex items-center">
-                    <Shield className="w-5 h-5 mr-3" />
-                    <span>Admin Panel</span>
-                  </div>
-                </NavLink>
-              </div>
-            )}
-
-            {/* Footer navigation items */}
-            <ul className="space-y-2 mb-2">
-              {footerItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <li key={item.path}>
-                    <NavLink
-                      to={item.path}
-                      onClick={() => setIsSidebarOpen(false)}
-                      className="flex items-center px-4 py-3 md:px-2 md:py-3 md:justify-center lg:px-4 lg:justify-start text-sm font-medium rounded-lg transition-colors text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-                    >
-                      {/* Tablet view with tooltip */}
-                      <div className="hidden md:flex lg:hidden">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div>
-                              <Icon className="w-5 h-5" />
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent side="right">
-                            <p>{item.label}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-
-                      {/* Mobile and Desktop view */}
-                      <div className="flex md:hidden lg:flex items-center">
-                        <Icon className="w-5 h-5 mr-3" />
-                        <span>{item.label}</span>
-                      </div>
-                    </NavLink>
-                  </li>
-                );
-              })}
-            </ul>
-
             {/* Sign Out Button */}
             <Button
               onClick={handleSignOut}
@@ -291,7 +240,7 @@ export default function RootLayout() {
               <Menu className="w-6 h-6" />
             </button>
             <h1 className="ml-4 text-lg font-semibold text-gray-900">
-              Expense Tracker
+              Admin Panel
             </h1>
           </div>
 
