@@ -105,10 +105,10 @@ export default function AdminIssues() {
 
   const handleStatusChange = async (id: string, status: string) => {
     try {
-      const { error } = await supabase
-        .from("issues")
-        .update({ status })
-        .eq("id", id);
+      const { error } = await supabase.rpc('update_issue_status', {
+        issue_id: id,
+        new_status: status
+      });
 
       if (error) throw error;
 
@@ -122,10 +122,10 @@ export default function AdminIssues() {
 
   const handleAssignIssue = async (issueId: string, adminId: string | null) => {
     try {
-      const { error } = await supabase
-        .from("issues")
-        .update({ assigned_to: adminId })
-        .eq("id", issueId);
+      const { error } = await supabase.rpc('assign_issue', {
+        issue_id: issueId,
+        admin_id: adminId
+      });
 
       if (error) throw error;
 
@@ -139,10 +139,10 @@ export default function AdminIssues() {
 
   const handlePriorityChange = async (issueId: string, priority: string) => {
     try {
-      const { error } = await supabase
-        .from("issues")
-        .update({ priority })
-        .eq("id", issueId);
+      const { error } = await supabase.rpc('update_issue_priority', {
+        issue_id: issueId,
+        new_priority: priority
+      });
 
       if (error) throw error;
 
