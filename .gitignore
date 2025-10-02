@@ -27,3 +27,8 @@ dist-ssr
 .firebase
 firebase-debug.log
 firestore-debug.log
+
+# Claude files
+alltables
+*.claude.md
+CLAUDE_*.md
