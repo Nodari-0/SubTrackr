@@ -8,6 +8,10 @@ jobs:
   build_and_preview:
     if: '${{ github.event.pull_request.head.repo.full_name == github.repository }}'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
 
     steps:
       - name: Checkout code
@@ -34,3 +38,5 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           projectId: ${{ secrets.FIREBASE_PROJECT_ID }}
           expires: 7d
+          entryPoint: '.'
+          target: default
