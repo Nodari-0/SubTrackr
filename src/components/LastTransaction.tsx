@@ -11,8 +11,17 @@ import { Badge } from "../components/ui/badge"; // ✅ FIX: Added import
 import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 
+interface Transaction {
+  id: string;
+  amount: number;
+  type: string;
+  description: string;
+  category: string;
+  created_at: string;
+}
+
 function lastTransaction() {
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
     const fetchTransactions = async () => {

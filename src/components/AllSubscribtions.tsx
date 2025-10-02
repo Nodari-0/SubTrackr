@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import {
   Table,
@@ -25,14 +25,22 @@ import {
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 
-const dummyData = [
+interface Subscription {
+  id: string;
+  name: string;
+  amount: number;
+  currency: string;
+  created_at: string;
+}
+
+const dummyData: Subscription[] = [
   { id: "1", name: "Netflix", amount: 9.99, currency: "USD", created_at: new Date().toISOString() },
   { id: "2", name: "Spotify", amount: 4.99, currency: "USD", created_at: new Date().toISOString() },
   { id: "3", name: "Adobe Creative Cloud", amount: 19.99, currency: "USD", created_at: new Date().toISOString() },
 ];
 
 const SubscriptionsTable = () => {
-  const [subscriptions, setSubscriptions] = useState([]);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -61,7 +69,7 @@ const SubscriptionsTable = () => {
     fetchSubscriptions();
   }, []);
 
-  const handleAddSubscription = async (e) => {
+  const handleAddSubscription = async (e: React.FormEvent) => {
     e.preventDefault();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;

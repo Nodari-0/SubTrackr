@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import {
   Table,
   TableBody,
   TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -33,8 +32,17 @@ import {
 } from "../components/ui/select";
 import { Badge } from "../components/ui/badge";
 
+interface Transaction {
+  id: string;
+  amount: number;
+  type: string;
+  description: string;
+  category: string;
+  created_at?: string;
+}
+
 const Transactions = () => {
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -43,7 +51,7 @@ const Transactions = () => {
   const [type, setType] = useState("Expense");
   const [description, setDescription] = useState("");
 
-  const dummyData = [
+  const dummyData: Transaction[] = [
     { id: "1", amount: 50, type: "Expense", description: "Grocery", category: "Grocery" },
     { id: "2", amount: 200, type: "Income", description: "Salary", category: "Salary" },
   ];
@@ -88,7 +96,7 @@ const Transactions = () => {
     fetchTransactions();
   }, []);
 
-  const handleAddTransaction = async (e) => {
+  const handleAddTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
     const {
       data: { user },
@@ -234,7 +242,7 @@ const Transactions = () => {
                   <Badge variant="outline">{t.category || 'N/A'}</Badge>
                 </TableCell>
                 <TableCell className="text-right">
-                  {new Date(t.created_at).toLocaleString()}
+                  {t.created_at ? new Date(t.created_at).toLocaleString() : 'N/A'}
                 </TableCell>
               </TableRow>
             ))}

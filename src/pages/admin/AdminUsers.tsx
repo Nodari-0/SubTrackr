@@ -47,7 +47,7 @@ export default function AdminUsers() {
   const [loading, setLoading] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
-  const { user, userRole } = useAuth();
+  const { userRole } = useAuth();
   const isSuperuser = userRole === "superuser";
 
   useEffect(() => {

@@ -10,7 +10,6 @@ import {
 import {
   LayoutDashboard,
   Wallet,
-  Tags,
   Settings,
   MessageSquare,
   AlertTriangle,
@@ -21,7 +20,6 @@ import {
 } from "lucide-react";
 import logo from "../assets/logo-color.png";
 import { useState, useEffect } from "react";
-import { supabase } from "../supabaseClient";
 
 interface NavigationItem {
   path: string;
