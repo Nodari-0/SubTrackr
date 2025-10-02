@@ -64,10 +64,10 @@ export default function AdminFeedback() {
 
   const handleStatusChange = async (id: string, status: string) => {
     try {
-      const { error } = await supabase
-        .from("feedback")
-        .update({ status })
-        .eq("id", id);
+      const { error } = await supabase.rpc('update_feedback_status', {
+        feedback_id: id,
+        new_status: status
+      });
 
       if (error) throw error;
 
