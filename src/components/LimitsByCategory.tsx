@@ -23,30 +23,45 @@ import {
 } from "../components/ui/collapsible";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
+interface Limit {
+  id: string;
+  category: string;
+  amount: number;
+  created_at: string;
+}
+
+interface Transaction {
+  id: string;
+  category?: string;
+  amount: number | string;
+  type?: string;
+  created_at: string;
+}
+
 const Limits = () => {
   // -------------------------
   // State declarations
   // -------------------------
-  const [limits, setLimits] = useState([]); // Stores user's limits
-  const [transactions, setTransactions] = useState([]); // Stores user's transactions
+  const [limits, setLimits] = useState<Limit[]>([]); // Stores user's limits
+  const [transactions, setTransactions] = useState<Transaction[]>([]); // Stores user's transactions
   const [loading, setLoading] = useState(true); // Loading state for UI feedback
 
   // Dialog and form state
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [expandedLimitId, setExpandedLimitId] = useState(null); // Currently expanded limit in collapsible
+  const [expandedLimitId, setExpandedLimitId] = useState<string | null>(null); // Currently expanded limit in collapsible
   const [categoryInput, setCategoryInput] = useState(""); // Input value for category
   const [amountInput, setAmountInput] = useState(""); // Input value for amount
-  const [limitBeingEdited, setLimitBeingEdited] = useState(null); // Limit currently being edited
+  const [limitBeingEdited, setLimitBeingEdited] = useState<Limit | null>(null); // Limit currently being edited
 
   // -------------------------
   // Dummy data for logged-out users
   // -------------------------
-  const dummyLimits = [
+  const dummyLimits: Limit[] = [
     { id: "1", category: "Food", amount: 940, created_at: new Date().toISOString() },
     { id: "2", category: "Travel", amount: 200, created_at: new Date().toISOString() },
   ];
 
-  const dummyTransactions = [
+  const dummyTransactions: Transaction[] = [
     { id: "t1", category: "Food", amount: 76.9, type: "expense", created_at: new Date().toISOString() },
     { id: "t2", category: "Travel", amount: 44, type: "expense", created_at: new Date().toISOString() },
   ];
@@ -117,8 +132,8 @@ const Limits = () => {
 
           // Update transactions state based on event type
           setTransactions((prev) => {
-            const newTransaction = payload.new;
-            const oldTransaction = payload.old;
+            const newTransaction = payload.new as Transaction;
+            const oldTransaction = payload.old as Partial<Transaction>;
 
             switch (payload.eventType) {
               case "INSERT":
@@ -138,13 +153,15 @@ const Limits = () => {
       .subscribe();
 
     // Cleanup subscription on unmount
-    return () => supabase.removeChannel(channel);
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   // -------------------------
   // Calculate total spent for a category this month
   // -------------------------
-  const calculateSpent = (category) => {
+  const calculateSpent = (category: string) => {
     const now = new Date();
     const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
@@ -157,7 +174,7 @@ const Limits = () => {
         const isThisMonth = transactionDate >= firstDayOfMonth;
         return categoryMatches && isExpense && isThisMonth;
       })
-      .reduce((sum, transaction) => sum + parseFloat(transaction.amount || 0), 0);
+      .reduce((sum, transaction) => sum + parseFloat(String(transaction.amount || 0)), 0);
 
     return totalSpent;
   };
@@ -174,7 +191,7 @@ const Limits = () => {
   // -------------------------
   // Save or update a limit
   // -------------------------
-  const handleSaveLimit = async (e) => {
+  const handleSaveLimit = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission
     
     if (!categoryInput || !amountInput) return;
@@ -211,7 +228,7 @@ const Limits = () => {
   // -------------------------
   // Delete a limit
   // -------------------------
-  const handleDeleteLimit = async (limitId) => {
+  const handleDeleteLimit = async (limitId: string) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
@@ -222,7 +239,7 @@ const Limits = () => {
   // -------------------------
   // Open edit dialog
   // -------------------------
-  const openEditDialog = (limit) => {
+  const openEditDialog = (limit: Limit) => {
     setLimitBeingEdited(limit);
     setCategoryInput(limit.category);
     setAmountInput(limit.amount.toString());
