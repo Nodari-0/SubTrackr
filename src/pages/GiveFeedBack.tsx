@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { supabase } from "../supabaseClient";
 import { useAuth } from "../context/AuthContext";
+import { Star } from "lucide-react";
 
 type FeedbackPayload = {
   name: string;
   email: string;
   category: string;
   message: string;
+  rating: number;
   user_id?: string;
 };
 
@@ -16,6 +18,8 @@ function GiveFeedBack() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [category, setCategory] = useState("general");
+  const [rating, setRating] = useState(5);
+  const [hoveredRating, setHoveredRating] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -33,6 +37,7 @@ function GiveFeedBack() {
       email: userEmail,
       category,
       message: feedback,
+      rating,
       ...(user ? { user_id: user.id } : {}),
     };
 
@@ -51,6 +56,7 @@ function GiveFeedBack() {
     setEmail("");
     setName("");
     setCategory("general");
+    setRating(5);
   };
 
   return (
@@ -104,6 +110,31 @@ function GiveFeedBack() {
               <option value="praise">Praise</option>
               <option value="other">Other</option>
             </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Rating *
+            </label>
+            <div className="flex gap-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setRating(star)}
+                  onMouseEnter={() => setHoveredRating(star)}
+                  onMouseLeave={() => setHoveredRating(0)}
+                  className="transition-transform hover:scale-110"
+                >
+                  <Star
+                    className={`w-8 h-8 ${
+                      star <= (hoveredRating || rating)
+                        ? "fill-yellow-400 text-yellow-400"
+                        : "text-gray-300"
+                    }`}
+                  />
+                </button>
+              ))}
+            </div>
           </div>
           <div>
             <label

@@ -16,6 +16,7 @@ import {
   Menu,
   X,
   ArrowLeft,
+  Shield,
 } from "lucide-react";
 import logo from "../assets/logo-color.png";
 import { useState } from "react";
@@ -155,6 +156,41 @@ export default function AdminLayout() {
 
           {/* Main Navigation */}
           <nav className="flex-1 p-4 md:p-2 lg:p-4">
+            {/* Quick Access - Admin Users Button */}
+            <div className="mb-4 pb-4 border-b border-gray-200">
+              <NavLink
+                to="/admin/users"
+                onClick={() => setIsSidebarOpen(false)}
+                className={({ isActive }) =>
+                  `flex items-center px-4 py-3 md:px-2 md:py-3 md:justify-center lg:px-4 lg:justify-start text-sm font-bold rounded-lg transition-colors ${
+                    isActive
+                      ? "bg-black text-white"
+                      : "bg-gray-900 text-white hover:bg-black"
+                  }`
+                }
+              >
+                {/* Tablet view with tooltip */}
+                <div className="hidden md:flex lg:hidden">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Shield className="w-5 h-5" />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p>Manage Admin Users</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+
+                {/* Mobile and Desktop view */}
+                <div className="flex md:hidden lg:flex items-center">
+                  <Shield className="w-5 h-5 mr-3" />
+                  <span>Manage Admins</span>
+                </div>
+              </NavLink>
+            </div>
+
             <ul className="space-y-2">
               {adminNavigationItems.map((item) => {
                 const Icon = item.icon;

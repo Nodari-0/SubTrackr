@@ -50,7 +50,7 @@ export default function RootLayout() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    setIsAdmin(userRole === "admin");
+    setIsAdmin(userRole === "admin" || userRole === "superuser");
   }, [userRole]);
 
   const handleSignOut = async () => {

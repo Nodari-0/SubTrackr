@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
+import { Star } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -28,6 +29,7 @@ interface Feedback {
   email: string;
   category: string;
   message: string;
+  rating: number;
   status: string;
   created_at: string;
 }
@@ -108,6 +110,7 @@ export default function AdminFeedback() {
               <TableHead className="text-white">Name</TableHead>
               <TableHead className="text-white">Email</TableHead>
               <TableHead className="text-white">Category</TableHead>
+              <TableHead className="text-white">Rating</TableHead>
               <TableHead className="text-white">Status</TableHead>
               <TableHead className="text-white">Date</TableHead>
               <TableHead className="text-white">Actions</TableHead>
@@ -120,6 +123,20 @@ export default function AdminFeedback() {
                 <TableCell>{feedback.email}</TableCell>
                 <TableCell>
                   <Badge variant="outline">{feedback.category}</Badge>
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star
+                        key={star}
+                        className={`w-4 h-4 ${
+                          star <= (feedback.rating || 5)
+                            ? "fill-yellow-400 text-yellow-400"
+                            : "text-gray-300"
+                        }`}
+                      />
+                    ))}
+                  </div>
                 </TableCell>
                 <TableCell>
                   <Badge
@@ -190,6 +207,21 @@ export default function AdminFeedback() {
               <div>
                 <p className="font-semibold">Category:</p>
                 <p>{selectedFeedback.category}</p>
+              </div>
+              <div>
+                <p className="font-semibold">Rating:</p>
+                <div className="flex gap-1 mt-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      className={`w-5 h-5 ${
+                        star <= (selectedFeedback.rating || 5)
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "text-gray-300"
+                      }`}
+                    />
+                  ))}
+                </div>
               </div>
               <div>
                 <p className="font-semibold">Message:</p>

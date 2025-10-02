@@ -31,7 +31,7 @@ export default function AdminProtectedRoute({ children }: AdminProtectedRoutePro
           console.error("Error checking admin role:", error);
           setIsAdmin(false);
         } else {
-          setIsAdmin(data?.role === "admin");
+          setIsAdmin(data?.role === "admin" || data?.role === "superuser");
         }
       } catch (err) {
         console.error("Error checking admin role:", err);

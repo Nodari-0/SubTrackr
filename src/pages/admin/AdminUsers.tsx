@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
+import { useAuth } from "../../context/AuthContext";
 import {
   Table,
   TableBody,
@@ -11,7 +12,7 @@ import {
 } from "../../components/ui/table";
 import { Badge } from "../../components/ui/badge";
 import { Skeleton } from "../../components/ui/skeleton";
-import { Button } from "../../components/ui/button";
+import { Button, buttonVariants } from "../../components/ui/button";
 import {
   Select,
   SelectContent,
@@ -19,7 +20,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../../components/ui/alert-dialog";
+import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "../../lib/utils";
 
 interface User {
   id: string;
@@ -32,6 +45,10 @@ interface User {
 export default function AdminUsers() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  const { user, userRole } = useAuth();
+  const isSuperuser = userRole === "superuser";
 
   useEffect(() => {
     fetchUsers();
@@ -69,6 +86,32 @@ export default function AdminUsers() {
     } catch (error) {
       console.error("Error updating role:", error);
       toast.error("Failed to update user role");
+    }
+  };
+
+  const handleDeleteClick = (userToDelete: User) => {
+    setUserToDelete(userToDelete);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!userToDelete) return;
+
+    try {
+      // Call Supabase admin API to delete user from auth.users
+      const { error } = await supabase.rpc('delete_user', {
+        user_id: userToDelete.id
+      });
+
+      if (error) throw error;
+
+      toast.success(`User ${userToDelete.email} has been deleted`);
+      setDeleteDialogOpen(false);
+      setUserToDelete(null);
+      fetchUsers();
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      toast.error("Failed to delete user. Make sure the delete_user function exists.");
     }
   };
 
@@ -111,7 +154,13 @@ export default function AdminUsers() {
                 <TableCell className="font-medium">{user.email}</TableCell>
                 <TableCell>{user.full_name || "N/A"}</TableCell>
                 <TableCell>
-                  <Badge variant={user.role === "admin" ? "default" : "secondary"}>
+                  <Badge
+                    variant={
+                      user.role === "superuser" ? "destructive" :
+                      user.role === "admin" ? "default" :
+                      "secondary"
+                    }
+                  >
                     {user.role}
                   </Badge>
                 </TableCell>
@@ -119,18 +168,39 @@ export default function AdminUsers() {
                   {new Date(user.created_at).toLocaleDateString()}
                 </TableCell>
                 <TableCell>
-                  <Select
-                    value={user.role}
-                    onValueChange={(value) => handleRoleChange(user.id, value)}
-                  >
-                    <SelectTrigger className="w-[120px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="user">User</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="flex gap-2 items-center">
+                    {isSuperuser ? (
+                      <>
+                        <Select
+                          value={user.role}
+                          onValueChange={(value) => handleRoleChange(user.id, value)}
+                          disabled={user.role === "superuser"}
+                        >
+                          <SelectTrigger className="w-[140px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="user">User</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
+                            <SelectItem value="superuser" disabled>
+                              Superuser
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {user.role !== "superuser" && (
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleDeleteClick(user)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </>
+                    ) : (
+                      <Badge variant="outline">No permissions</Badge>
+                    )}
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -143,6 +213,29 @@ export default function AdminUsers() {
           No users found
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the user{" "}
+              <strong>{userToDelete?.email}</strong> and remove all their data from the
+              system.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className={cn(buttonVariants({ variant: "destructive" }))}
+            >
+              Delete User
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

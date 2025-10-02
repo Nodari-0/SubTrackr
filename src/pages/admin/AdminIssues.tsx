@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
+import { useAuth } from "../../context/AuthContext";
 import {
   Table,
   TableBody,
@@ -19,6 +20,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/select";
 import { toast } from "sonner";
 
 interface Issue {
@@ -31,6 +39,18 @@ interface Issue {
   status: string;
   priority: string;
   created_at: string;
+  assigned_to: string | null;
+  assigned_user?: {
+    email: string;
+    full_name: string;
+  };
+}
+
+interface AdminUser {
+  id: string;
+  email: string;
+  full_name: string;
+  role: string;
 }
 
 export default function AdminIssues() {
@@ -38,9 +58,13 @@ export default function AdminIssues() {
   const [loading, setLoading] = useState(true);
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
+  const { user, userRole } = useAuth();
+  const isSuperuser = userRole === "superuser";
 
   useEffect(() => {
     fetchIssues();
+    fetchAdminUsers();
   }, []);
 
   const fetchIssues = async () => {
@@ -48,7 +72,10 @@ export default function AdminIssues() {
     try {
       const { data, error } = await supabase
         .from("issues")
-        .select("*")
+        .select(`
+          *,
+          assigned_user:assigned_to(email, full_name)
+        `)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -58,6 +85,21 @@ export default function AdminIssues() {
       toast.error("Failed to load issues");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAdminUsers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, email, full_name, role")
+        .in("role", ["admin", "superuser"])
+        .order("email");
+
+      if (error) throw error;
+      setAdminUsers(data || []);
+    } catch (error) {
+      console.error("Error fetching admin users:", error);
     }
   };
 
@@ -75,6 +117,40 @@ export default function AdminIssues() {
     } catch (error) {
       console.error("Error updating issue:", error);
       toast.error("Failed to update issue status");
+    }
+  };
+
+  const handleAssignIssue = async (issueId: string, adminId: string | null) => {
+    try {
+      const { error } = await supabase
+        .from("issues")
+        .update({ assigned_to: adminId })
+        .eq("id", issueId);
+
+      if (error) throw error;
+
+      toast.success(adminId ? "Issue assigned successfully" : "Issue unassigned");
+      fetchIssues();
+    } catch (error) {
+      console.error("Error assigning issue:", error);
+      toast.error("Failed to assign issue");
+    }
+  };
+
+  const handlePriorityChange = async (issueId: string, priority: string) => {
+    try {
+      const { error } = await supabase
+        .from("issues")
+        .update({ priority })
+        .eq("id", issueId);
+
+      if (error) throw error;
+
+      toast.success(`Priority updated to ${priority}`);
+      fetchIssues();
+    } catch (error) {
+      console.error("Error updating priority:", error);
+      toast.error("Failed to update priority");
     }
   };
 
@@ -123,6 +199,7 @@ export default function AdminIssues() {
               <TableHead className="text-white">Email</TableHead>
               <TableHead className="text-white">Type</TableHead>
               <TableHead className="text-white">Priority</TableHead>
+              <TableHead className="text-white">Assigned To</TableHead>
               <TableHead className="text-white">Status</TableHead>
               <TableHead className="text-white">Date</TableHead>
               <TableHead className="text-white">Actions</TableHead>
@@ -137,9 +214,53 @@ export default function AdminIssues() {
                   <Badge variant="outline">{issue.issue_type}</Badge>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={getPriorityColor(issue.priority)}>
-                    {issue.priority || "medium"}
-                  </Badge>
+                  {isSuperuser ? (
+                    <Select
+                      value={issue.priority || "medium"}
+                      onValueChange={(value) => handlePriorityChange(issue.id, value)}
+                    >
+                      <SelectTrigger className="w-[100px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="low">Low</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="high">High</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Badge variant={getPriorityColor(issue.priority)}>
+                      {issue.priority || "medium"}
+                    </Badge>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <Select
+                    value={issue.assigned_to || "unassigned"}
+                    onValueChange={(value) =>
+                      handleAssignIssue(
+                        issue.id,
+                        value === "unassigned" ? null : value
+                      )
+                    }
+                  >
+                    <SelectTrigger className="w-[160px]">
+                      <SelectValue placeholder="Unassigned" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="unassigned">Unassigned</SelectItem>
+                      {user && (
+                        <SelectItem value={user.id}>Assign to me</SelectItem>
+                      )}
+                      {adminUsers
+                        .filter((admin) => admin.id !== user?.id)
+                        .map((admin) => (
+                          <SelectItem key={admin.id} value={admin.id}>
+                            {admin.full_name || admin.email}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
                 </TableCell>
                 <TableCell>
                   <Badge
