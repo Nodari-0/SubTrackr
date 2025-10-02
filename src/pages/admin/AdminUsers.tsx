@@ -74,10 +74,10 @@ export default function AdminUsers() {
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ role: newRole })
-        .eq("id", userId);
+      const { error } = await supabase.rpc('update_user_role', {
+        user_id: userId,
+        new_role: newRole
+      });
 
       if (error) throw error;
 
